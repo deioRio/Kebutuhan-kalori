@@ -89,18 +89,20 @@ def get_food_recommendations(age, gender, activity_level, weight):
             "Lemak jenuh": 70
         })
 
+    final_recommended = {}
     for food in recommended:
         gram = recommended[food] * adjustment_factor
         cal = int(gram * calories_per_gram.get(food, 1))
-        recommended[food] = cal
+        final_recommended[food] = {"gram": int(gram), "kalori": cal}
 
+    final_to_avoid = {}
     for food in to_avoid:
         adjusted = to_avoid[food] * adjustment_factor
         gram = int(min(adjusted, to_avoid[food] * 1.3))
         cal = int(gram * calories_per_gram.get(food, 1))
-        to_avoid[food] = cal
+        final_to_avoid[food] = {"gram": gram, "kalori": cal}
 
-    return recommended, to_avoid
+    return final_recommended, final_to_avoid
 
 # Fungsi efek baik dan risiko
 def generate_effects(recommended_foods, avoided_foods):
@@ -168,20 +170,12 @@ if page == "Rekomendasi Makanan":
             """, unsafe_allow_html=True)
 
         st.subheader("✔❤ Makanan yang Direkomendasikan:")
-        recommended_html = "".join([f"- {food}: <b>{cal} kalori</b><br>" for food, cal in good_foods.items()])
-        st.markdown(f"""
-            <div style="background-color: rgba(0, 102, 204, 0.2); padding: 15px; border-radius: 10px; color: black;">
-                {recommended_html}
-            </div>
-            """, unsafe_allow_html=True)
+        for food, data in good_foods.items():
+            st.markdown(f"- **{food}**: {data['gram']} gram ({data['kalori']} kalori)")
 
         st.subheader("❌💔 Makanan yang Sebaiknya Dihindari:")
-        avoid_html = "".join([f"- {food}: <b>{cal} kalori</b><br>" for food, cal in avoid_foods.items()])
-        st.markdown(f"""
-            <div style="background-color: rgba(255, 0, 0, 0.2); padding: 15px; border-radius: 10px; color: black;">
-                {avoid_html}
-            </div>
-            """, unsafe_allow_html=True)
+        for food, data in avoid_foods.items():
+            st.markdown(f"- **{food}**: {data['gram']} gram ({data['kalori']} kalori)")
 
         if efek_baik:
             st.subheader("🌿 Efek Baik Jika Mengonsumsi Makanan yang Direkomendasikan:")
