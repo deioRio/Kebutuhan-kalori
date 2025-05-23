@@ -19,8 +19,6 @@ calories_per_gram = {
     "Karbohidrat sehat (ubi, roti gandum)": 1.2,
     "Pisang": 0.9,
     "Air mineral yang cukup": 0,
-
-    # Makanan yang dihindari
     "Makanan cepat saji": 2.5,
     "Minuman bersoda": 0.4,
     "Makanan tinggi gula": 4.0,
@@ -171,19 +169,21 @@ if page == "Rekomendasi Makanan":
 
         st.subheader("✔❤ Makanan yang Direkomendasikan:")
         for food, data in good_foods.items():
-            st.markdown(
-                f"- <span style='background-color:#cce5ff; padding:3px 6px; border-radius:5px;'>"
-                f"<strong>{food}</strong>: {data['gram']} gram ({data['kalori']} kalori)</span>",
-                unsafe_allow_html=True
-            )
+            st.markdown(f"""
+                <div style="background-color:#cce5ff; padding:10px; border-radius:10px; margin-bottom:10px;">
+                    <strong>{food}</strong><br>
+                    {data['gram']} gram ({data['kalori']} kalori)
+                </div>
+                """, unsafe_allow_html=True)
 
         st.subheader("❌💔 Makanan yang Sebaiknya Dihindari:")
         for food, data in avoid_foods.items():
-            st.markdown(
-                f"- <span style='background-color:#f8d7da; padding:3px 6px; border-radius:5px;'>"
-                f"<strong>{food}</strong>: {data['gram']} gram ({data['kalori']} kalori)</span>",
-                unsafe_allow_html=True
-            )
+            st.markdown(f"""
+                <div style="background-color:#f8d7da; padding:10px; border-radius:10px; margin-bottom:10px;">
+                    <strong>{food}</strong><br>
+                    {data['gram']} gram ({data['kalori']} kalori)
+                </div>
+                """, unsafe_allow_html=True)
 
         if efek_baik:
             st.subheader("🌿 Efek Baik Jika Mengonsumsi Makanan yang Direkomendasikan:")
