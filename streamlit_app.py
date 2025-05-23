@@ -121,9 +121,9 @@ if page == "Rekomendasi Makanan":
 
         # Estimasi kebutuhan kalori harian
         if gender == "Pria":
-            bmr = 10 * weight + 6.25 * 170 - 5 * age + 5  # asumsi tinggi badan 170 cm
+            bmr = 10 * weight + 6.25 * 170 - 5 * age + 5
         else:
-            bmr = 10 * weight + 6.25 * 160 - 5 * age - 161  # asumsi tinggi badan 160 cm
+            bmr = 10 * weight + 6.25 * 160 - 5 * age - 161
 
         if activity_level == "Rendah":
             kebutuhan_kalori = bmr * 1.2
@@ -141,7 +141,6 @@ if page == "Rekomendasi Makanan":
             """, unsafe_allow_html=True
         )
 
-        # Rekomendasi
         st.subheader("✔❤ Makanan yang Direkomendasikan:")
         recommended_html = "".join([f"- {food}: <b>{gram} gram</b><br>" for food, gram in good_foods.items()])
         st.markdown(
@@ -152,7 +151,6 @@ if page == "Rekomendasi Makanan":
             """, unsafe_allow_html=True
         )
 
-        # Hindari
         st.subheader("❌💔 Makanan yang Sebaiknya Dihindari:")
         avoid_html = "".join([f"- {food}: <b>{gram} gram</b><br>" for food, gram in avoid_foods.items()])
         st.markdown(
@@ -163,7 +161,6 @@ if page == "Rekomendasi Makanan":
             """, unsafe_allow_html=True
         )
 
-        # Efek Baik
         if efek_baik:
             st.subheader("🌿 Efek Baik Jika Mengonsumsi Makanan yang Direkomendasikan:")
             st.markdown(
@@ -175,7 +172,6 @@ if page == "Rekomendasi Makanan":
                 unsafe_allow_html=True
             )
 
-        # Risiko
         if risiko:
             st.subheader("⚠️ Risiko Jika Tidak Menghindari Makanan Tersebut:")
             st.markdown(
@@ -196,5 +192,10 @@ elif page == "Tentang Aplikasi":
     - Berdasarkan data umur, berat badan, dan aktivitas fisik
     - Rekomendasi bersifat umum dan bukan pengganti nasihat medis profesional
 
-    💡 Dibuat dengan Streamlit oleh [Tim Anda]
+    💡 Dibuat dengan Streamlit oleh:
+    - Rio Surya T
+    - Trio Agung
+    - Hazlia Mulya
+    - M Rizqi
+    - Bunga Sekar
     """)
