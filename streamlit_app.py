@@ -5,6 +5,36 @@ st.set_page_config(page_title="Rekomendasi Makanan", page_icon="🍧", layout="c
 # Sidebar Navigasi
 page = st.sidebar.selectbox("Pilih Halaman", ["Rekomendasi Makanan", "Tentang Aplikasi"])
 
+# Data kalori per gram makanan
+calories_per_gram = {
+    "Susu rendah lemak": 0.5,
+    "Sayuran hijau": 0.2,
+    "Protein hewani dan nabati": 1.5,
+    "Karbohidrat kompleks (nasi merah, oatmeal)": 1.3,
+    "Sayuran & buah segar": 0.5,
+    "Protein (telur, ayam, tahu)": 1.5,
+    "Makanan tinggi kalsium": 0.7,
+    "Ikan berlemak (salmon, sarden)": 2.0,
+    "Sayur berserat tinggi": 0.4,
+    "Karbohidrat sehat (ubi, roti gandum)": 1.2,
+    "Pisang": 0.9,
+    "Air mineral yang cukup": 0,
+
+    # Makanan yang dihindari
+    "Makanan cepat saji": 2.5,
+    "Minuman bersoda": 0.4,
+    "Makanan tinggi gula": 4.0,
+    "Gorengan": 3.0,
+    "Makanan olahan": 2.0,
+    "Terlalu banyak kafein": 0,
+    "Makanan asin": 1.5,
+    "Daging merah berlebihan": 2.5,
+    "Gula tinggi": 4.0,
+    "Camilan manis": 4.0,
+    "Minuman manis": 0.5,
+    "Lemak jenuh": 9.0,
+}
+
 # Fungsi rekomendasi makanan
 def get_food_recommendations(age, gender, activity_level, weight):
     recommended = {}
@@ -60,14 +90,19 @@ def get_food_recommendations(age, gender, activity_level, weight):
         })
 
     for food in recommended:
-        recommended[food] = int(recommended[food] * adjustment_factor)
+        gram = recommended[food] * adjustment_factor
+        cal = int(gram * calories_per_gram.get(food, 1))
+        recommended[food] = cal
+
     for food in to_avoid:
         adjusted = to_avoid[food] * adjustment_factor
-        to_avoid[food] = int(min(adjusted, to_avoid[food] * 1.3))
+        gram = int(min(adjusted, to_avoid[food] * 1.3))
+        cal = int(gram * calories_per_gram.get(food, 1))
+        to_avoid[food] = cal
 
     return recommended, to_avoid
 
-# Fungsi menampilkan efek baik dan risiko
+# Fungsi efek baik dan risiko
 def generate_effects(recommended_foods, avoided_foods):
     efek_baik = []
     risiko = []
@@ -92,27 +127,20 @@ def generate_effects(recommended_foods, avoided_foods):
 
     return efek_baik, risiko
 
-# Halaman Rekomendasi
+# Halaman utama
 if page == "Rekomendasi Makanan":
-    st.markdown(
-        """
+    st.markdown("""
         <div style="background-color: rgba(0, 102, 204, 0.7); padding:20px; border-radius:10px; color:white; text-align:center;">
             <h2>Rekomendasi Makanan Berdasarkan Aktivitas & Usia</h2>
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+        """, unsafe_allow_html=True)
 
     st.markdown("### Masukkan Data Anda")
 
     with st.container():
-        st.markdown("#### 🧓 Umur Anda")
         age = st.number_input("Masukkan umur Anda (tahun)", min_value=1, max_value=100, key="age")
-        st.markdown("#### ⚖️ Berat Badan Anda")
         weight = st.number_input("Masukkan berat badan Anda (kg)", min_value=1.0, max_value=200.0, step=0.1, key="weight")
-        st.markdown("#### 🚻 Jenis Kelamin")
         gender = st.selectbox("Pilih jenis kelamin", ["Pria", "Wanita"], key="gender")
-        st.markdown("#### 🏃‍♂️ Tingkat Aktivitas Fisik")
         activity_level = st.selectbox("Tingkat aktivitas fisik Anda", ["Rendah", "Sedang", "Tinggi"], key="activity")
 
     if st.button("Tampilkan Rekomendasi"):
@@ -133,55 +161,43 @@ if page == "Rekomendasi Makanan":
             kebutuhan_kalori = bmr * 1.725
 
         st.subheader("🔥 Kebutuhan Kalori Harian Anda")
-        st.markdown(
-            f"""
+        st.markdown(f"""
             <div style="background-color: rgba(255, 165, 0, 0.3); padding: 15px; border-radius: 10px; color: black;">
-                Perkiraan kebutuhan energi Anda adalah <b>{int(kebutuhan_kalori)} kalori per hari</b> berdasarkan informasi yang Anda masukkan.
+                Perkiraan kebutuhan energi Anda adalah <b>{int(kebutuhan_kalori)} kalori per hari</b>.
             </div>
-            """, unsafe_allow_html=True
-        )
+            """, unsafe_allow_html=True)
 
         st.subheader("✔❤ Makanan yang Direkomendasikan:")
-        recommended_html = "".join([f"- {food}: <b>{gram} gram</b><br>" for food, gram in good_foods.items()])
-        st.markdown(
-            f"""
+        recommended_html = "".join([f"- {food}: <b>{cal} kalori</b><br>" for food, cal in good_foods.items()])
+        st.markdown(f"""
             <div style="background-color: rgba(0, 102, 204, 0.2); padding: 15px; border-radius: 10px; color: black;">
                 {recommended_html}
             </div>
-            """, unsafe_allow_html=True
-        )
+            """, unsafe_allow_html=True)
 
         st.subheader("❌💔 Makanan yang Sebaiknya Dihindari:")
-        avoid_html = "".join([f"- {food}: <b>{gram} gram</b><br>" for food, gram in avoid_foods.items()])
-        st.markdown(
-            f"""
+        avoid_html = "".join([f"- {food}: <b>{cal} kalori</b><br>" for food, cal in avoid_foods.items()])
+        st.markdown(f"""
             <div style="background-color: rgba(255, 0, 0, 0.2); padding: 15px; border-radius: 10px; color: black;">
                 {avoid_html}
             </div>
-            """, unsafe_allow_html=True
-        )
+            """, unsafe_allow_html=True)
 
         if efek_baik:
             st.subheader("🌿 Efek Baik Jika Mengonsumsi Makanan yang Direkomendasikan:")
-            st.markdown(
-                f"""
+            st.markdown(f"""
                 <div style="background-color: rgba(0, 153, 76, 0.2); padding: 15px; border-radius: 10px; color: black;">
                     {"<br>".join(["- " + item for item in efek_baik])}
                 </div>
-                """,
-                unsafe_allow_html=True
-            )
+                """, unsafe_allow_html=True)
 
         if risiko:
             st.subheader("⚠️ Risiko Jika Tidak Menghindari Makanan Tersebut:")
-            st.markdown(
-                f"""
+            st.markdown(f"""
                 <div style="background-color: rgba(255, 204, 0, 0.2); padding: 15px; border-radius: 10px; color: black;">
                     {"<br>".join(["- " + item for item in risiko])}
                 </div>
-                """,
-                unsafe_allow_html=True
-            )
+                """, unsafe_allow_html=True)
 
 # Halaman Tentang
 elif page == "Tentang Aplikasi":
