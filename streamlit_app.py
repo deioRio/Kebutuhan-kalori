@@ -37,7 +37,6 @@ calories_per_gram = {
 def get_food_recommendations(age, gender, activity_level, weight):
     recommended = {}
     to_avoid = {}
-
     adjustment_factor = weight / 60.0
 
     if age < 18:
@@ -137,17 +136,16 @@ if page == "Rekomendasi Makanan":
 
     st.markdown("### Masukkan Data Anda")
 
-    with st.container():
-        age = st.number_input("Masukkan umur Anda (tahun)", min_value=1, max_value=100, key="age")
-        weight = st.number_input("Masukkan berat badan Anda (kg)", min_value=1.0, max_value=200.0, step=0.1, key="weight")
-        gender = st.selectbox("Pilih jenis kelamin", ["Pria", "Wanita"], key="gender")
-        activity_level = st.selectbox("Tingkat aktivitas fisik Anda", ["Rendah", "Sedang", "Tinggi"], key="activity")
+    age = st.number_input("Masukkan umur Anda (tahun)", min_value=1, max_value=100)
+    weight = st.number_input("Masukkan berat badan Anda (kg)", min_value=1.0, max_value=200.0, step=0.1)
+    gender = st.selectbox("Pilih jenis kelamin", ["Pria", "Wanita"])
+    activity_level = st.selectbox("Tingkat aktivitas fisik Anda", ["Rendah", "Sedang", "Tinggi"])
 
     if st.button("Tampilkan Rekomendasi"):
         good_foods, avoid_foods = get_food_recommendations(age, gender, activity_level, weight)
         efek_baik, risiko = generate_effects(good_foods, avoid_foods)
 
-        # Estimasi kebutuhan kalori harian
+        # Kebutuhan kalori
         if gender == "Pria":
             bmr = 10 * weight + 6.25 * 170 - 5 * age + 5
         else:
@@ -167,24 +165,33 @@ if page == "Rekomendasi Makanan":
             </div>
             """, unsafe_allow_html=True)
 
-        st.subheader("✔❤ Makanan yang Direkomendasikan:")
-        for food, data in good_foods.items():
-            st.markdown(f"""
-                <div style="background-color:#cce5ff; padding:10px; border-radius:10px; margin-bottom:10px;">
-                    <strong>{food}</strong><br>
-                    {data['gram']} gram ({data['kalori']} kalori)
-                </div>
-                """, unsafe_allow_html=True)
+        # Tampilan semua makanan direkomendasikan dalam satu box biru
+        rekomendasi_html = "<ul style='margin-left: 1em;'>"
+        for f, v in good_foods.items():
+            rekomendasi_html += f"<li><strong>{f}</strong>: {v['gram']} gram ({v['kalori']} kalori)</li>"
+        rekomendasi_html += "</ul>"
 
-        st.subheader("❌💔 Makanan yang Sebaiknya Dihindari:")
-        for food, data in avoid_foods.items():
-            st.markdown(f"""
-                <div style="background-color:#f8d7da; padding:10px; border-radius:10px; margin-bottom:10px;">
-                    <strong>{food}</strong><br>
-                    {data['gram']} gram ({data['kalori']} kalori)
-                </div>
-                """, unsafe_allow_html=True)
+        st.markdown(f"""
+            <div style="background-color:#cce5ff; padding:20px; border-radius:10px;">
+                <h4>Makanan yang Direkomendasikan:</h4>
+                {rekomendasi_html}
+            </div>
+            """, unsafe_allow_html=True)
 
+        # Tampilan semua makanan yang dihindari dalam satu box merah
+        hindari_html = "<ul style='margin-left: 1em;'>"
+        for f, v in avoid_foods.items():
+            hindari_html += f"<li><strong>{f}</strong>: {v['gram']} gram ({v['kalori']} kalori)</li>"
+        hindari_html += "</ul>"
+
+        st.markdown(f"""
+            <div style="background-color:#f8d7da; padding:20px; border-radius:10px; margin-top:20px;">
+                <h4>Makanan yang Sebaiknya Dihindari:</h4>
+                {hindari_html}
+            </div>
+            """, unsafe_allow_html=True)
+
+        # Efek Baik
         if efek_baik:
             st.subheader("🌿 Efek Baik Jika Mengonsumsi Makanan yang Direkomendasikan:")
             st.markdown(f"""
@@ -193,6 +200,7 @@ if page == "Rekomendasi Makanan":
                 </div>
                 """, unsafe_allow_html=True)
 
+        # Risiko
         if risiko:
             st.subheader("⚠️ Risiko Jika Tidak Menghindari Makanan Tersebut:")
             st.markdown(f"""
