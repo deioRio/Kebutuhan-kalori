@@ -19,8 +19,6 @@ calories_per_gram = {
     "Karbohidrat sehat (ubi, roti gandum)": 1.2,
     "Pisang": 0.9,
     "Air mineral yang cukup": 0,
-
-    # Makanan yang dihindari
     "Makanan cepat saji": 2.5,
     "Minuman bersoda": 0.4,
     "Makanan tinggi gula": 4.0,
@@ -39,7 +37,6 @@ calories_per_gram = {
 def get_food_recommendations(age, gender, activity_level, weight):
     recommended = {}
     to_avoid = {}
-
     adjustment_factor = weight / 60.0
 
     if age < 18:
@@ -149,7 +146,6 @@ if page == "Rekomendasi Makanan":
         good_foods, avoid_foods = get_food_recommendations(age, gender, activity_level, weight)
         efek_baik, risiko = generate_effects(good_foods, avoid_foods)
 
-        # Estimasi kebutuhan kalori harian
         if gender == "Pria":
             bmr = 10 * weight + 6.25 * 170 - 5 * age + 5
         else:
@@ -170,12 +166,16 @@ if page == "Rekomendasi Makanan":
             """, unsafe_allow_html=True)
 
         st.subheader("✔❤ Makanan yang Direkomendasikan:")
+        st.markdown('<div style="background-color: rgba(0, 123, 255, 0.1); padding: 15px; border-radius: 10px;">', unsafe_allow_html=True)
         for food, data in good_foods.items():
             st.markdown(f"- **{food}**: {data['gram']} gram ({data['kalori']} kalori)")
+        st.markdown('</div>', unsafe_allow_html=True)
 
         st.subheader("❌💔 Makanan yang Sebaiknya Dihindari:")
+        st.markdown('<div style="background-color: rgba(255, 0, 0, 0.1); padding: 15px; border-radius: 10px;">', unsafe_allow_html=True)
         for food, data in avoid_foods.items():
             st.markdown(f"- **{food}**: {data['gram']} gram ({data['kalori']} kalori)")
+        st.markdown('</div>', unsafe_allow_html=True)
 
         if efek_baik:
             st.subheader("🌿 Efek Baik Jika Mengonsumsi Makanan yang Direkomendasikan:")
