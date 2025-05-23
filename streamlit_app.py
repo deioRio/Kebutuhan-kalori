@@ -92,13 +92,13 @@ def get_food_recommendations(age, gender, activity_level, weight):
     for food in recommended:
         gram = recommended[food] * adjustment_factor
         cal = int(gram * calories_per_gram.get(food, 1))
-        recommended[food] = cal
+        recommended[food] = (cal, int(gram))
 
     for food in to_avoid:
         adjusted = to_avoid[food] * adjustment_factor
         gram = int(min(adjusted, to_avoid[food] * 1.3))
         cal = int(gram * calories_per_gram.get(food, 1))
-        to_avoid[food] = cal
+        to_avoid[food] = (cal, gram)
 
     return recommended, to_avoid
 
@@ -147,7 +147,6 @@ if page == "Rekomendasi Makanan":
         good_foods, avoid_foods = get_food_recommendations(age, gender, activity_level, weight)
         efek_baik, risiko = generate_effects(good_foods, avoid_foods)
 
-        # Estimasi kebutuhan kalori harian
         if gender == "Pria":
             bmr = 10 * weight + 6.25 * 170 - 5 * age + 5
         else:
@@ -168,7 +167,9 @@ if page == "Rekomendasi Makanan":
             """, unsafe_allow_html=True)
 
         st.subheader("✔❤ Makanan yang Direkomendasikan:")
-        recommended_html = "".join([f"- {food}: <b>{cal} kalori</b><br>" for food, cal in good_foods.items()])
+        recommended_html = "".join([
+            f"- {food}: <b>{val[1]} gram</b> ({val[0]} kalori)<br>" for food, val in good_foods.items()
+        ])
         st.markdown(f"""
             <div style="background-color: rgba(0, 102, 204, 0.2); padding: 15px; border-radius: 10px; color: black;">
                 {recommended_html}
@@ -176,7 +177,9 @@ if page == "Rekomendasi Makanan":
             """, unsafe_allow_html=True)
 
         st.subheader("❌💔 Makanan yang Sebaiknya Dihindari:")
-        avoid_html = "".join([f"- {food}: <b>{cal} kalori</b><br>" for food, cal in avoid_foods.items()])
+        avoid_html = "".join([
+            f"- {food}: <b>{val[1]} gram</b> ({val[0]} kalori)<br>" for food, val in avoid_foods.items()
+        ])
         st.markdown(f"""
             <div style="background-color: rgba(255, 0, 0, 0.2); padding: 15px; border-radius: 10px; color: black;">
                 {avoid_html}
